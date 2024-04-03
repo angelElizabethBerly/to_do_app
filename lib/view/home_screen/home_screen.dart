@@ -2,9 +2,14 @@
 
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,18 +40,24 @@ class HomeScreen extends StatelessWidget {
                           value: false,
                           onChanged: (value) {
                             value = true;
+                            setState(() {});
                           },
                         ),
                         title: Row(
                           children: [
                             Text("Task"),
-                            SizedBox(width: 10),
+                            SizedBox(width: 20),
                             Container(
                               padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                   color: Colors.grey.shade400,
                                   borderRadius: BorderRadius.circular(20)),
-                              child: Text("Incomplete"),
+                              child: Text(
+                                "Incomplete",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ],
                         ),
