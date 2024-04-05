@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:to_do_app/constant/color_constant.dart';
+import 'package:to_do_app/controller/home_screen_controller.dart';
+import 'package:to_do_app/model/task_model.dart';
+import 'package:to_do_app/view/home_screen/widget/task_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,6 +14,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    HomeScreenController.getInitKeys();
+    super.initState();
+  }
+
+  TextEditingController taskController = TextEditingController();
+  String? dropValue;
+  bool isCompleted = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,37 +46,19 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             Column(
-              children: List.generate(
-                  5,
-                  (index) => ListTile(
-                        leading: Checkbox(
-                          value: false,
-                          onChanged: (value) {
-                            value = true;
-                            setState(() {});
-                          },
-                        ),
-                        title: Row(
-                          children: [
-                            Text("Task"),
-                            SizedBox(width: 20),
-                            Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                  color: Colors.grey.shade400,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Text(
-                                "Incomplete",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                            onPressed: () {}, icon: Icon(Icons.delete)),
-                      )),
+              children: List.generate(HomeScreenController.taskListKeys.length,
+                  (index) {
+                final currentKey = HomeScreenController.taskListKeys[index];
+                final currentElement =
+                    HomeScreenController.todoBox.get(currentKey);
+                return TaskCardWidget(
+                  task: currentElement!.task,
+                  onDelete: () async {
+                    await HomeScreenController.deleteTask(currentKey);
+                    setState(() {});
+                  },
+                );
+              }),
             )
           ],
         ),
@@ -72,13 +67,78 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
         child: TextButton.icon(
             style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(Colors.deepPurple)),
-            onPressed: () {},
+                backgroundColor:
+                    MaterialStatePropertyAll(ColorConstant.primaryPurple)),
+            onPressed: () {
+              taskController.clear();
+              showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        top: 20,
+                        left: 25,
+                        right: 25,
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: StatefulBuilder(builder: (BuildContext context,
+                        void Function(void Function()) bottomSetState) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Add New Task",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 25),
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            controller: taskController,
+                            decoration: InputDecoration(
+                                hintText: "Task",
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide())),
+                          ),
+                          SizedBox(height: 10),
+                          DropdownButton(
+                            value: dropValue,
+                            hint: Text("Select"),
+                            items: [
+                              DropdownMenuItem(value: "1", child: Text("Work")),
+                              DropdownMenuItem(
+                                  value: "2", child: Text("Personal")),
+                              DropdownMenuItem(value: "3", child: Text("Diet")),
+                            ],
+                            onChanged: (value) {
+                              dropValue = value;
+                              bottomSetState(() {});
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          ElevatedButton(
+                              onPressed: () {
+                                if (taskController.text != "") {
+                                  HomeScreenController.addTask(
+                                      task: taskController.text,
+                                      completed: isCompleted,
+                                      category: dropValue);
+                                  setState(() {});
+                                }
+                                Navigator.pop(context);
+                              },
+                              child: Text("Add"))
+                        ],
+                      );
+                    }),
+                  );
+                },
+              );
+            },
             icon: Text(
               "Add a task",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: ColorConstant.primaryWhite),
             ),
-            label: Icon(Icons.add_circle, color: Colors.white)),
+            label: Icon(Icons.add_circle, color: ColorConstant.primaryWhite)),
       ),
     );
   }
