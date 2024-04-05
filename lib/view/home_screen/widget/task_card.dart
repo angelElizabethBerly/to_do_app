@@ -15,14 +15,14 @@ class TaskCardWidget extends StatefulWidget {
 }
 
 class _TaskCardWidgetState extends State<TaskCardWidget> {
-  bool checkValue = false;
+  bool isCompleted = false;
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Checkbox(
-        value: checkValue,
+        value: isCompleted,
         onChanged: (value) {
-          checkValue = !checkValue;
+          isCompleted = !isCompleted;
           setState(() {});
         },
       ),
@@ -33,10 +33,12 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
           Container(
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: ColorConstant.primaryGrey,
+                color: isCompleted == false
+                    ? ColorConstant.primaryGrey
+                    : ColorConstant.primaryPurple,
                 borderRadius: BorderRadius.circular(20)),
             child: Text(
-              "Incomplete",
+              isCompleted == false ? "Incomplete" : "Complete",
               style: TextStyle(
                   color: ColorConstant.primaryWhite,
                   fontWeight: FontWeight.bold),
