@@ -6,6 +6,8 @@ class HomeScreenController {
 
   static var todoBox = Hive.box<TaskModel>('todoBox');
 
+  // static var taskObj = TaskModel(task: "");
+
   static getInitKeys() {
     taskListKeys = todoBox.keys.toList();
   }
@@ -20,5 +22,9 @@ class HomeScreenController {
   static Future<void> deleteTask(var key) async {
     await todoBox.delete(key);
     taskListKeys = todoBox.keys.toList();
+  }
+
+  static Future taskCompleted(var key, TaskModel taskobj) async {
+    await todoBox.put(key, taskobj);
   }
 }

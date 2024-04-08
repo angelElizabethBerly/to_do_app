@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/constant/color_constant.dart';
 import 'package:to_do_app/controller/home_screen_controller.dart';
-import 'package:to_do_app/model/task_model.dart';
 import 'package:to_do_app/view/home_screen/widget/task_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [Icon(Icons.search), SizedBox(width: 10)],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
             Row(
@@ -52,7 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 final currentElement =
                     HomeScreenController.todoBox.get(currentKey);
                 return TaskCardWidget(
-                  task: currentElement!.task,
+                  taskObj: currentElement!,
+                  currentKey: currentKey,
+                  task: currentElement.task,
                   onDelete: () async {
                     await HomeScreenController.deleteTask(currentKey);
                     setState(() {});
@@ -111,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                             onChanged: (value) {
                               dropValue = value;
+
                               bottomSetState(() {});
                             },
                           ),
